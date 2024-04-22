@@ -1,0 +1,10 @@
+Impementações pendentes:
+
++ Tabela para cadastro de usuário da API
+  > Bancos, ClientID e Secret individualizados	
+  > ClientID e Secret comun a todos Clientes Se7e
+  > Clientes Se7e, enviar CNPJ no header
+
++ Tabela para log em banco de dados
+
+

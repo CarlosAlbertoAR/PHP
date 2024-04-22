@@ -1,5 +1,5 @@
 <?php
-require_once ("../class/dao.class.php");
+require_once ("../class/DAO.php");
 
 $jsonArray = file_get_contents('php://input');
 $return = array();

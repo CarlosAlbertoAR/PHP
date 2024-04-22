@@ -1,6 +1,6 @@
 <?php
-require_once ("../class/dao.class.php");
-require_once ("../class/token.class.php");
+require_once ("../class/DAO.php");
+require_once ("../class/tokencontroller.php");
 
 $json = file_get_contents('php://input');
 $return = array();
@@ -12,11 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($headers['Authorization'])) {
         $authorizationHeader = $headers['Authorization'];
 
-        if (!TokenController::validToken($authorizationHeader)) {
+        if (!TokenController::isValidToken($authorizationHeader)) {
+            http_response_code(403);
             die(json_encode('Erro: Token inválido ou expirado.'));
         }
 
     } else {
+        http_response_code(400);
         die(json_encode('Erro: Cabeçalho Authorization não informado.'));
     }
 
