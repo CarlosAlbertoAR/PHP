@@ -1,0 +1,5 @@
+Habilitar módulos para uso com o PostgresSQL
+
+
+extension=pdo_pgsql
+extension=pgsql

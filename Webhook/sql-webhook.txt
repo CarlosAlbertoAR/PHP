@@ -1,0 +1,14 @@
+select * from notificacao.itau order by datarecebimento desc
+select * from notificacao.sicredi order by datarecebimento desc 
+select * from notificacao.bancobrasil order by datarecebimento desc
+select * from notificacao.santander order by datarecebimento desc
+
+delete from notificacao.itau
+alter sequence notificacao.itau_id_seq restart 1;
+
+delete from notificacao.bancobrasil
+alter sequence notificacao.bancobrasil_id_seq restart 1;
+
+delete from notificacao.santander
+alter sequence notificacao.santander_id_seq restart 1;
+
