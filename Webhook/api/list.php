@@ -1,41 +1,48 @@
 <?php
-require_once ("../class/dao.class.php");
+require_once ("../class/DAO.php");
 $con = dataBase::getConexao();
 
 $banco = $_REQUEST["banco"];
-$return = array();
 
-if($banco === "sicredi") 
+if($banco === "bancobrasil") 
 {
-    $query = "select id,
-                     datarecebimento,
-                     dataentrega,
-                     numerobanco, 
-                     numeroagencia, 
-                     nossonumero,
-                     json 
-                from notificacao.sicredi";
-
-    $consulta = $con->prepare($query);
-    $consulta->execute();
-
-    while ($data = $consulta->fetch(PDO::FETCH_ASSOC)) 
-    {
-        $return[] = array(
-            "id"              => $data["id"],
-            "datarecebimento" => $data["datarecebimento"],
-            "numerobanco"     => $data["numerobanco"],
-            "numeroagencia"   => $data["numeroagencia"],
-            "nossonumero"     => $data["nossonumero"],            
-            "json"            => $data["json"]            
-        );
-    }
-
+    $convenio = $_REQUEST["convenio"];
+    
+    $return = Database::retornarNotificacoesBancoBrasil($convenio);
+    
     die(json_encode($return));
 
-} else {
+} else if($banco === "sicredi") 
+{
+    $agencia = $_REQUEST["agencia"];
+    $convenio = $_REQUEST["convenio"];
+    
+    $return = Database::retornarNotificacoesBancoSicredi($agencia, $convenio);
+    
+    die(json_encode($return));
+
+} else if($banco === "itau")
+{ 
+    $agencia = $_REQUEST["agencia"];
+    $conta = $_REQUEST["conta"];
+    
+    $return = Database::retornarNotificacoesBancoItau($agencia, $conta);
+    
+    die(json_encode($return));
+
+} else if($banco === "santander")
+{ 
+    $cnpj = $_REQUEST["cnpj"];
+    $convenio = $_REQUEST["convenio"];
+    
+    $return = Database::retornarNotificacoesBancoSantander($cnpj, $convenio);
+    
+    die(json_encode($return));
+
+} else 
+{
     http_response_code(400);
-    echo "Erro: Banco não suportado para consulta: " .$banco;
+    echo "Erro: Banco não suportado para consulta: ".$banco;
 }
 
 ?>

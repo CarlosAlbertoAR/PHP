@@ -14,8 +14,6 @@ http_response_code(500);
 
 if (validarGrantType($urlEncodedString) and (autenticarPeloBody($urlEncodedString) or autenticarPeloHeader($headers)))
 {
-
-
     $Token = TokenController::createAcessToken($IDAutenticado, 900);
     http_response_code(200);              
     die(json_encode($Token));

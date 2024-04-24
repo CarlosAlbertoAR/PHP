@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             for ($i = 0; $i < $tamanho; $i++) {
 
-                if (!isset($obj[$i]['idBeneficiario']))
+                if (!isset($obj[$i]['numeroConvenio']))
                 {
                     http_response_code(400);
                     throw new Exception('Propriedade numeroConvenio não encontrada no Json enviado.');    
