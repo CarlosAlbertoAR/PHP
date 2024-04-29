@@ -1,5 +1,5 @@
 <?php
-require_once ("../class/DAO.php");
+require_once ("../class/santanderDAO.php");
 
 $json = file_get_contents('php://input');
 $return = array();
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception('Propriedade bankNumber não encontrada no Json recebido.');    
             }
 
-            if (Database::salvarNotificacaoSantander($obj->{'payerDocumentNumber'}, $obj->{'bankCode'}, $obj->{'covenant'}, $obj->{'bankNumber'}, $json)){
+            if (SantanderDAO::salvarNotificacaoSantander($obj->{'payerDocumentNumber'}, $obj->{'bankCode'}, $obj->{'covenant'}, $obj->{'bankNumber'}, $json)){
                 http_response_code(200);
                 echo json_encode("Sucesso: Notificação recebida.");
             } else {
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $jsonCadastro = '{Operacao: Cadastro Webhook} IP Addres: '.$_SERVER['REMOTE_ADDR'];
         
-        if (Database::salvarNotificacaoSantander('', '', '', '', $jsonCadastro)){
+        if (SantanderDAO::salvarNotificacaoSantander('', '', '', '', $jsonCadastro)){
             http_response_code(200);
             echo json_encode("Sucesso: Teste Webhook ok!.");
         } else {

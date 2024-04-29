@@ -116,7 +116,7 @@ function Autenticar($cliendID, $clientSecret)
     {    
         http_response_code(401);
         die(json_encode('Credenciais inválidas.'));
-        return false;
+        //return false;
     }
 }
 

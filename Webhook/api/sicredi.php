@@ -1,5 +1,5 @@
 <?php
-require_once ("../class/DAO.php");
+require_once ("../class/sicrediDAO.php");
 
 $json = file_get_contents('php://input');
 $return = array();
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception('Propriedade nossoNumero não encontrada no Json recebido.');    
             }
             
-            if (Database::salvarNotificacaoSicredi($obj->{'agencia'}, $obj->{'beneficiario'}, $obj->{'nossoNumero'}, $json)){
+            if (SicrediDAO::salvarNotificacaoSicredi($obj->{'agencia'}, $obj->{'beneficiario'}, $obj->{'nossoNumero'}, $json)){
                 http_response_code(200);
                 echo json_encode("Sucesso: Notificação recebida.");
             } else {
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $jsonCadastro = '{Operacao: Cadastro Webhook} IP Addres: '.$_SERVER['REMOTE_ADDR'];
         
-        if (Database::salvarNotificacaoSicredi('', '', '', $jsonCadastro)){
+        if (SicrediDAO::salvarNotificacaoSicredi('', '', '', $jsonCadastro)){
             http_response_code(200);
             echo json_encode("Sucesso: Teste Webhook ok!.");
         } else {

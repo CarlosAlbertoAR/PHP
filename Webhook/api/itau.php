@@ -1,5 +1,5 @@
 <?php
-require_once ("../class/DAO.php");
+require_once ("../class/itauDAO.php");
 require_once ("../class/tokencontroller.php");
 
 $json = file_get_contents('php://input');
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $numeroAgencia = substr($obj[$i]['idBeneficiario'], 0, 4); 
                 $numeroConta = substr($obj[$i]['idBeneficiario'], 4, 8); 
 
-                if (!Database::salvarNotificacaoItau($numeroAgencia, $numeroConta, $obj[$i]['numeroNossoNumero'], json_encode($obj[$i])))
+                if (!ItauDAO::salvarNotificacaoItau($numeroAgencia, $numeroConta, $obj[$i]['numeroNossoNumero'], json_encode($obj[$i])))
                 {
                     http_response_code(500);
                     die(json_encode("Erro: Erro interno." .PHP_EOL. "Código: 9001"));
