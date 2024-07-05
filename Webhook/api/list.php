@@ -47,4 +47,3 @@ else {
     echo "Erro: Banco não suportado para consulta: ".$banco;
 }
 
-?>

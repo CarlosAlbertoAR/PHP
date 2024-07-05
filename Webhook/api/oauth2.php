@@ -1,4 +1,5 @@
 <?php
+require_once ("../class/utils.php");
 require_once ("../class/tokencontroller.php");
 
 $CredenciaisItau = array('LSqJj2zegg8OhkS8QBJo4KCgolMlVB0QygB', 'uy4dO3mWT6pHEptgb0bG8Y2YupZZ1BbSRkTSRA3G2cRJatykymI5FZETXQRwgkpv');
@@ -11,6 +12,7 @@ $IDAutenticado = '';
 $return = '';
 
 http_response_code(500);
+header('Content-Type:application/json');
 
 if (validarGrantType($urlEncodedString) and (autenticarPeloBody($urlEncodedString) or autenticarPeloHeader($headers)))
 {
@@ -22,13 +24,13 @@ if (validarGrantType($urlEncodedString) and (autenticarPeloBody($urlEncodedStrin
     
     if(empty($urlEncodedString)) {
         http_response_code(400);
-        die(json_encode("O Body está vazio"));
+        die(JsonMessage::erro('O Body está vazio'));
     }
 
     if (empty($clientID) or empty($clientSecret))
     {
         http_response_code(400);
-        die(json_encode('Erro: Requisição não possui credenciais.' .PHP_EOL. 'Código: 9001'));
+        die(JsonMessage::erro('Erro: Requisição não possui credenciais.' .PHP_EOL. 'Código: 9001'));
     }    
 }
 
@@ -42,12 +44,12 @@ function validarGrantType($urlEncodedString)
         if (! isset($params)) {
             Log::salvarLogErro('Requisição inválida.'.PHP_EOL.PHP_EOL. $params);
             http_response_code(400);
-            die(json_encode('Requisição inválida.'));
+            die(JsonMessage::erro('Requisição inválida.'));
         }
     
-        if ((empty($params['grant_type'])) or ($params['grant_type'] xor 'client_credentials')) {
+        if ((empty($params['grant_type'])) or ($params['grant_type'] != 'client_credentials')) {
             http_response_code(400);
-            die(json_encode('grant_type inválido ou não informado.'));
+            die(JsonMessage::erro('grant_type inválido ou não informado.'));
         } else
             return true;
     }
@@ -65,7 +67,7 @@ function autenticarPeloBody($urlEncodedString){
         if (! isset($params)) {
             Log::salvarLogErro('Requisição inválida.'.PHP_EOL.PHP_EOL. $params);
             http_response_code(500);
-            die(json_encode('Requisição inválida.'));
+            die(JsonMessage::erro('Requisição inválida.'));
         }
     
         if (! empty($params['client_id']))
@@ -115,9 +117,8 @@ function Autenticar($cliendID, $clientSecret)
     } else
     {    
         http_response_code(401);
-        die(json_encode('Credenciais inválidas.'));
+        die(JsonMessage::erro('Credenciais inválidas.'));
         //return false;
     }
 }
 
-?>

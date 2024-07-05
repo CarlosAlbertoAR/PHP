@@ -1,11 +1,13 @@
 <?php
 
+require_once ("../class/utils.php");
 require_once ("../class/bancobrasilDAO.php");
 
 $jsonArray = file_get_contents('php://input');
 $return = array();
 
 http_response_code(500);
+header('Content-Type:application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -38,18 +40,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 if (!BancobrasilDAO::salvarNotificacaoBancoBrasil($obj[$i]['numeroConvenio'], $obj[$i]['id'], json_encode($obj[$i]))){
                     http_response_code(500);
-                    die(json_encode("Erro: Erro interno." .PHP_EOL. "Código: 9001"));
+                    die(JsonMessage::erro('Erro interno.' .PHP_EOL. 'Código: 9001'));
                 }
 
             }    
 
             http_response_code(200);
-            echo json_encode("Sucesso: Notificação recebida.");
+            echo JsonMessage::success('Notificação recebida.');
 
         } catch (Exception $e)
         {
             Log::salvarLogErro('Falha ao processar Json recebido:'.PHP_EOL.PHP_EOL .$e .PHP_EOL.PHP_EOL .$jsonArray);    
-            die(json_encode($e->getMessage()));
+            die(JsonMessage::erro($e->getMessage()));
         }             
 
     } else {
@@ -57,10 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (BancobrasilDAO::salvarNotificacaoBancoBrasil('', '', $jsonCadastro)){
             http_response_code(200);
-            echo json_encode("Sucesso: Teste Webhook ok!.");
+            echo JsonMessage::success('Teste Webhook ok!.');
         } else {
             http_response_code(500);
-            die(json_encode("Erro: Erro interno." .PHP_EOL. "Código: 9002"));
+            die(JsonMessage::erro('Erro interno.' .PHP_EOL. 'Código: 9002'));
         }
     
     }
@@ -86,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             http_response_code(200);
-            echo json_encode("Sucesso: Notificação confirmada.");
+            echo JsonMessage::success('Notificação recebida.');
 
         } catch (Exception $e)
         {
@@ -97,11 +99,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     http_response_code(200);        
-    die(json_encode('{ Webhook Banco do Brasil Operacional. IP Addres: '.$_SERVER['REMOTE_ADDR'].'}'));
+    die(JsonMessage::success('Webhook Banco do Brasil Operacional. IP Addres: '.$_SERVER['REMOTE_ADDR']));
 } else
 {
     http_response_code(501);        
     die(json_encode('Método não suportado.'));
 }
 
-?>
