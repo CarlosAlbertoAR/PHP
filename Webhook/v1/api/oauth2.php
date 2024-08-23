@@ -1,6 +1,7 @@
 <?php
 require_once ("../class/utils.php");
 require_once ("../class/tokencontroller.php");
+require_once ("../class/logDAO.php");
 
 $CredenciaisItau = array('LSqJj2zegg8OhkS8QBJo4KCgolMlVB0QygB', 'uy4dO3mWT6pHEptgb0bG8Y2YupZZ1BbSRkTSRA3G2cRJatykymI5FZETXQRwgkpv');
 
@@ -23,6 +24,9 @@ if (validarGrantType($urlEncodedString) and (autenticarPeloBody($urlEncodedStrin
 {
     
     if(empty($urlEncodedString)) {
+        $mensagem = 'Tentativa de autenticação com body da requisição vazio.';
+        $detalhe = 'IP: '.$_SERVER['REMOTE_ADDR'];
+        LogDAO::salvarLogErroBancoDados('000', $mensagem, $detalhe);
         http_response_code(400);
         die(JsonMessage::erro('O Body está vazio'));
     }
@@ -42,14 +46,16 @@ function validarGrantType($urlEncodedString)
         parse_str($urlEncodedString, $params);
 
         if (! isset($params)) {
-            Log::salvarLogErro('Requisição inválida.'.PHP_EOL.PHP_EOL. $params);
+            LogDAO::salvarLogErroBancoDados('000', 'Requisição inválida.', $params);
             http_response_code(400);
             die(JsonMessage::erro('Requisição inválida.'));
         }
     
         if ((empty($params['grant_type'])) or ($params['grant_type'] != 'client_credentials')) {
+            $mensagem = 'grant_type inválido ou não informado.'; 
+            LogDAO::salvarLogErroBancoDados('000', $mensagem, $params);
             http_response_code(400);
-            die(JsonMessage::erro('grant_type inválido ou não informado.'));
+            die(JsonMessage::erro($mensagem));
         } else
             return true;
     }
@@ -65,7 +71,7 @@ function autenticarPeloBody($urlEncodedString){
         parse_str($urlEncodedString, $params);
 
         if (! isset($params)) {
-            Log::salvarLogErro('Requisição inválida.'.PHP_EOL.PHP_EOL. $params);
+            LogDAO::salvarLogErroBancoDados('000', 'Requisição inválida.', $params);
             http_response_code(500);
             die(JsonMessage::erro('Requisição inválida.'));
         }
@@ -116,8 +122,12 @@ function Autenticar($cliendID, $clientSecret)
         return true;
     } else
     {    
+        $mensagem = 'Credenciais inválidas.';
+        $credenciais = 'ClientID: ' + $cliendID + ' ClientSecret:' + $clientSecret;
+        LogDAO::salvarLogErroBancoDados('000', $mensagem, $credenciais);
+
         http_response_code(401);
-        die(JsonMessage::erro('Credenciais inválidas.'));
+        die(JsonMessage::erro($mensagem));
         //return false;
     }
 }

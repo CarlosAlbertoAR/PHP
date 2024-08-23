@@ -1,7 +1,8 @@
 <?php
 
+require_once ("../class/constantes.php");
 require_once ("../class/DAO.php");
-require_once ("../class/log.php");
+require_once ("../class/logDAO.php");
 require_once ("../class/notificacao.php");
 
 date_default_timezone_set('America/Sao_Paulo');
@@ -10,7 +11,7 @@ class ItauDAO extends Database {
 
     public static function salvarNotificacaoItau($numeroAgencia, $numeroConta, $nossoNumero, $json) 
     {    
-        $numeroBantoItau = '341';
+        $numeroBantoItau = BANCO_ITAU;
 
         $query = 'insert into notificacao.itau (                 
                                                 datarecebimento,     
@@ -32,8 +33,6 @@ class ItauDAO extends Database {
 
         $statement = DataBase::getConexao()->prepare($query);
 
-        $dataAtual = date('Y-m-d H:i:s');
-
         $statement->bindParam(':numeroBanco', $numeroBantoItau); 
         $statement->bindParam(':numeroAgencia', $numeroAgencia); 
         $statement->bindParam(':numeroConta', $numeroConta); 
@@ -45,7 +44,7 @@ class ItauDAO extends Database {
             $statement->execute();
             return true;
         } catch (PDOException $e) {
-            Log::salvarLogErro($e->getMessage());
+            LogDAO::salvarLogErroEmDisco($e->getMessage());
             return false;    
         }
 
@@ -105,5 +104,3 @@ class ItauDAO extends Database {
         return $notificacao;
     }
 }
-
-?>

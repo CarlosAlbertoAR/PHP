@@ -1,6 +1,7 @@
 <?php
 require_once ("../class/utils.php");
 require_once ("../class/itauDAO.php");
+require_once ("../class/logDAO.php");
 require_once ("../class/tokencontroller.php");
 
 $json = file_get_contents('php://input');
@@ -67,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } catch (Exception $e)
         {
-            Log::salvarLogErro('Falha ao processar Json recebido:'.PHP_EOL.PHP_EOL .$e .PHP_EOL.PHP_EOL .$json);    
+            LogDAO::salvarLogErroBancoDados(BANCO_ITAU, 'Falha ao processar Json recebido', $e .PHP_EOL.PHP_EOL .$json);    
             die(JsonMessage::erro($e->getMessage()));
         }
 

@@ -2,6 +2,7 @@
 
 require_once ("../class/utils.php");
 require_once ("../class/bancobrasilDAO.php");
+require_once ("../class/logDAO.php");
 
 $jsonArray = file_get_contents('php://input');
 $return = array();
@@ -50,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } catch (Exception $e)
         {
-            Log::salvarLogErro('Falha ao processar Json recebido:'.PHP_EOL.PHP_EOL .$e .PHP_EOL.PHP_EOL .$jsonArray);    
+            LogDAO::salvarLogErroBancoDados(BANCO_BRASIL, 'Falha ao processar Json recebido', $e .PHP_EOL.PHP_EOL .$jsonArray);                
             die(JsonMessage::erro($e->getMessage()));
         }             
 
@@ -92,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } catch (Exception $e)
         {
-            Log::salvarLogErro('Falha ao processar Json recebido:'.PHP_EOL.PHP_EOL .$e .PHP_EOL.PHP_EOL .$jsonArray);    
+            LogDAO::salvarLogErroBancoDados(BANCO_BRASIL, 'Falha ao processar Json recebido', $e .PHP_EOL.PHP_EOL .$jsonArray);    
             die(json_encode($e->getMessage()));
         }             
     }        

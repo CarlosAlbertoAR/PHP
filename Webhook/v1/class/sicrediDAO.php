@@ -1,75 +1,77 @@
 <?php
 
+require_once ("../class/constantes.php");
 require_once ("../class/DAO.php");
-require_once ("../class/log.php");
+require_once ("../class/logDAO.php");
 require_once ("../class/notificacao.php");
 
 date_default_timezone_set('America/Sao_Paulo');
 
-class SantanderDAO extends Database {
+class SicrediDAO extends Database {
 
-    public static function salvarNotificacaoSantander($cnpj, $numeroBanco, $numeroConvenio, $nossoNumero, $json) 
+    public static function salvarNotificacaoSicredi($numeroAgencia, $numeroConvenio, $nossoNumero, $json) 
     {
-        $numeroBancoSantander = '033';
+        $NumeroBancoSiredi = BANCO_SICREDI;
 
-        $query = 'insert into notificacao.santander (                 
+        $query = 'insert into notificacao.sicredi  (                 
+                                                     numeroagencia,
                                                      datarecebimento,     
-                                                     cnpj,             
                                                      numerobanco,      
                                                      numeroconvenio,    
-                                                     nossonumero,      
-                                                     status,
+                                                     nossonumero,
+                                                     status,      
                                                      json)             
                                             values  (                   
-                                                    CURRENT_TIMESTAMP(0), 
-                                                    :cnpj,            
-                                                    :numerobanco,     
-                                                    :numeroconvenio,    
-                                                    :nossonumero,     
-                                                    :status,
-                                                    :json             
+                                                     :numeroagencia,
+                                                     CURRENT_TIMESTAMP(0), 
+                                                     :numerobanco,     
+                                                     :numeroconvenio,    
+                                                     :nossonumero,
+                                                     :status,     
+                                                     :json             
                                                     )';
     
-        $statement = DataBase::getConexao()->prepare($query);
+        $statement = dataBase::getConexao()->prepare($query);
     
-        $dataAtual = date("Y-m-d H:i:s");
+        $numeroConvenioSemZeroEsquerda = intval($numeroConvenio);
+        $numeroConvenio = strval($numeroConvenioSemZeroEsquerda);
     
-        $statement->bindParam(':cnpj', $cnpj); 
-        $statement->bindParam(':numerobanco', $numeroBancoSantander); 
+        $statement->bindParam(':numeroagencia', $numeroAgencia); 
+        $statement->bindParam(':numerobanco', $NumeroBancoSiredi); 
         $statement->bindParam(':numeroconvenio', $numeroConvenio); 
-        $statement->bindParam(':nossonumero', $nossoNumero);     
-        $statement->bindParam(':status', self::$status_recebido);        
+        $statement->bindParam(':nossonumero', $nossoNumero);
+        $statement->bindParam(':status', self::$status_recebido);
         $statement->bindParam(':json', $json); 
     
         try {
             $statement->execute();
             return true;
         } catch (PDOException $e) {
-            Log::salvarLogErro($e->getMessage());
+            LogDAO::salvarLogErroEmDisco($e->getMessage());
             return false;    
         }
     
     }
 
-    public static function retornarNotificacoesBancoSantander($cnpj, $numeroConvenio)
+    public static function retornarNotificacoesBancoSicredi($numeroAgencia, $numeroConvenio)
     {
         $query = 'SELECT id,
                          datarecebimento,
                          dataentrega,
-                         cnpj,
                          numerobanco, 
                          numeroconvenio, 
+                         numeroagencia, 
                          nossonumero,
                          json 
-                    FROM notificacao.santander
-                   WHERE cnpj = :cnpj
+                    FROM notificacao.sicredi
+                   WHERE numeroagencia = :numeroagencia
                      AND numeroconvenio = :numeroconvenio
                      AND status in (:status_recebido, :status_falha_entrega)
-                ORDER BY id                     
-                   LIMIT :quantidade +1 ';
+                ORDER BY id
+                     LIMIT :quantidade +1';
     
-        $consulta = DataBase::getConexao()->prepare($query);
-        $consulta->bindParam(':cnpj', $cnpj, PDO::PARAM_STR);
+        $consulta = dataBase::getConexao()->prepare($query);
+        $consulta->bindParam(':numeroagencia', $numeroAgencia, PDO::PARAM_STR);
         $consulta->bindParam(':numeroconvenio', $numeroConvenio, PDO::PARAM_STR);        
         $consulta->bindParam(':status_recebido', self::$status_recebido);
         $consulta->bindParam(':status_falha_entrega', self::$status_falha_entrega);
@@ -84,8 +86,8 @@ class SantanderDAO extends Database {
             $arrayNotificao[] = array(
                 'id'              => $registro['id'],
                 'datarecebimento' => $registro['datarecebimento'],
-                'cnpj'            => $registro['cnpj'],
                 'numerobanco'     => $registro['numerobanco'],
+                'numeroagencia'   => $registro['numeroagencia'],
                 'nossonumero'     => $registro['nossonumero'],
                 'json'            => $registro['json']
             );
@@ -106,5 +108,3 @@ class SantanderDAO extends Database {
         return $notificacao;
     }
 }
-
-?>

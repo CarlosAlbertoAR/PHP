@@ -1,7 +1,8 @@
 <?php
 
+require_once ("../class/constantes.php");
 require_once ("../class/DAO.php");
-require_once ("../class/log.php");
+require_once ("../class/logDAO.php");
 require_once ("../class/notificacao.php");
 
 date_default_timezone_set('America/Sao_Paulo');
@@ -10,7 +11,7 @@ class BancobrasilDAO extends Database {
 
     public static function salvarNotificacaoBancoBrasil($numeroConvenio, $nossoNumero, $json) 
     {
-        $numeroBancoBrasil = '001';
+        $numeroBancoBrasil = BANCO_BRASIL;
 
         $query = 'insert into notificacao.bancobrasil (                 
                                                        datarecebimento,     
@@ -30,8 +31,6 @@ class BancobrasilDAO extends Database {
     
         $statement = DataBase::getConexao()->prepare($query);
     
-        $dataAtual = date("Y-m-d H:i:s");
-    
         $statement->bindParam(':numerobanco', $numeroBancoBrasil); 
         $statement->bindParam(':numeroconvenio', $numeroConvenio); 
         $statement->bindParam(':nossonumero', $nossoNumero);     
@@ -42,7 +41,7 @@ class BancobrasilDAO extends Database {
             $statement->execute();
             return true;
         } catch (PDOException $e) {
-            Log::salvarLogErro($e->getMessage());
+            LogDAO::salvarLogErroEmDisco($e->getMessage());
             return false;    
         }
     
@@ -119,7 +118,7 @@ class BancobrasilDAO extends Database {
             return true;
 
         } catch (PDOException $e) {
-            Log::salvarLogErro($e->getMessage());
+            LogDAO::salvarLogErroEmDisco($e->getMessage());
             return false;    
         }
     

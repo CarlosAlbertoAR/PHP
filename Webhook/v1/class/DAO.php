@@ -1,5 +1,5 @@
 <?php
-require_once ("../class/log.php");
+require_once ("../class/logDAO.php");
 
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -27,7 +27,7 @@ class Database {
             self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         } catch (PDOException $e) {
-            Log::salvarLogErro($e->getMessage());            
+            LogDAO::salvarLogErroEmDisco($e->getMessage());            
             echo $e->getMessage();
         }
     }
@@ -44,4 +44,3 @@ class Database {
 
 }
 
-?>
